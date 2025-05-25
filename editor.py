@@ -8,10 +8,8 @@ class FinanceApp:   # creating the class for the personal finance manager app
     def __init__(self):
         self.balance = 0.0
         self.transaction_history = []
-        self.csv_file = Path("appData.csv")
+        self.csv_file = Path("test.csv")
         self.load_transactions()  # Load existing transactions when starting
-
-    # Creating methods for the FinanceApp class
 
     def load_transactions(self):
         try:
@@ -53,7 +51,7 @@ class FinanceApp:   # creating the class for the personal finance manager app
                 writer.writerow(["Date", "Category", "Amount"])
             self.balance = 0.0
             self.transaction_history = []
-            print(f"All transactions cleared (file kept).")
+            print("All transactions cleared (file kept).")
 
         except Exception as e:
             print(f"Error clearing previous entries: {e}")
@@ -74,9 +72,9 @@ class FinanceApp:   # creating the class for the personal finance manager app
 
     def app_expense_record(self):
         try:
-            amount = float(input(f"Enter the amount of expense: €").strip())
+            amount = float(input("Enter the amount of expense: €").strip())
             if amount > self.balance:
-                print(f"Insufficient balance. Please try again")
+                print("Insufficient balance. Please try again")
 
             else:
                 expense_category = input(
@@ -90,7 +88,7 @@ class FinanceApp:   # creating the class for the personal finance manager app
             print(f"Expense recorded: €{amount:.2f} for {expense_category}")
 
         except ValueError:
-            print(f"Invalid amount. Please enter a number.")
+            print("Invalid amount. Please enter a number.")
 
     def app_balance(self):
         print(f"Current balance: €{self.balance:.2f}")

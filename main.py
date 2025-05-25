@@ -36,7 +36,7 @@ class FinanceApp:   # creating the class for the personal finance manager app
 
     def save_transaction(self, date, category, amount):
         try:
-            """Save transaction with separate date columns"""
+
             path = Path(self.csv_file)
             with path.open("a", newline="", encoding="utf-8") as file:
                 writer = csv.writer(file)
@@ -70,7 +70,7 @@ class FinanceApp:   # creating the class for the personal finance manager app
             print(f"Funds added: €{amount:.2f}")
 
         except ValueError:
-            print("Invalid amount. Please enter a number.")
+            print(f"Invalid amount. Please enter a number.")
 
     def app_expense_record(self):
         try:
@@ -104,7 +104,7 @@ class FinanceApp:   # creating the class for the personal finance manager app
         self.app_balance()
 
     def start(self):
-        print("Welcome to Personal Finance Manager!")
+        print(f"Welcome to Personal Finance Manager!")
 
         while True:
             print(f"\nMenu:")
@@ -114,6 +114,7 @@ class FinanceApp:   # creating the class for the personal finance manager app
             print(f"4. View Transaction History")
             print(f"5. Clear All Previous Entries")
             print(f"6. Exit")
+
             choice = input(f"Choose an option (1-6): ")
 
             if choice == '1':

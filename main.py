@@ -64,7 +64,7 @@ class FinanceApp:   # The class for the personal finance manager app
             amount = float(input(f"Enter the amount of funds: €").strip())
             source_of_funds = input(
                 f"Enter source of funds(Salary, Saving, Gift): ").strip()
-            date = datetime.now().strftime("%Y-%m-%d %H:%M")  # Adding data and time
+            date = datetime.now().strftime("%Y-%m-%d %H:%M")  # Timestamp each entry
             self.balance += amount  # this is the as self.balance = self.balance + amount
             self.transaction_history.append((date, source_of_funds, amount))
             self.save_file(date, source_of_funds, amount)

@@ -6,15 +6,15 @@ The application prompts the user for input, and allows the user to type in amoun
 
 # Application Features
 
-Ask the user to enter funds and expense
-Show funds and expenses by category
-Save the user input as a .csv file.
-Read the file to summarise the financial record
+1.  Ask the user to enter funds and expense
+2.  Show funds and expenses by category
+3.  Save the user input as a csv file
+4.  Read the file to summarise the financial record
 
 # Task
 
-Create the financial manager class.
-Create the constructor
-create the instance methods
-Run the app to test it
+1.  Create the financial manager class
+2.  Create the constructor
+3.  Create the instance methods
+4.  Run the app to test it
 

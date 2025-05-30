@@ -1,3 +1,4 @@
+import pytest
 from pathlib import Path  # Path is use to get the path or directory of a file
 import csv  # To import,write, and save csv file
 from datetime import datetime  # To add date and time to app method
@@ -6,91 +7,76 @@ from datetime import datetime  # To add date and time to app method
 class FinanceApp:   # The class for the personal finance manager app
 
     # This method (the constructor) is used to initialized object.
-    def __init__(self):
-        self.balance = 0.0
-        self.transaction_history = []
-        self.csv_file = Path("appData.csv")
-        self.load_transactions()  # Load existing transactions when starting.
 
-    # This method is used to load saved data
+    def __init__(self, csv_file="appData.csv"):
+        self.balance = 0.0
+        self.record_history = []
+        self.csv_file = Path(csv_file)
+        self.load_transactions()
+
+    # This method is used to read the saved file
     def load_transactions(self):
-        try:    # Try  and except block is used for exception handling while working with files
-            path = Path(self.csv_file)
+        try:     # Try  and except block is used for exception handling while working with files
+            path = self.csv_file
             with path.open("r", newline="", encoding="utf-8") as file:
-                print(f"The '{path.name}' is now open")
                 reader = csv.reader(file)
-                headers = next(reader)  # Skip header
+                headers = next(reader)
                 for row in reader:
                     if len(row) >= 3:
-                        date, category, amount = row[0], row[1], float(
-                            row[2])
-                        self.transaction_history.append(
-                            (date, category, amount))
+                        date, category, amount = row[0], row[1], float(row[2])
+                        self.record_history.append((date, category, amount))
                         self.balance += amount
-
-        except FileNotFoundError:
-            # the except keywword will create the file if it doesn't exist
-            with path.open("w", newline="", encoding="utf-8") as file:
+        except FileNotFoundError:  # the except keywword will create the file if it doesn't exist
+            with self.csv_file.open("w", newline="", encoding="utf-8") as file:
                 writer = csv.writer(file)
                 writer.writerow(["Date", "Category", "Amount"])
+            print(f"File not found. A new file was created: {self.csv_file}")
 
     # This method is used to saved data from the user input
     def save_file(self, date, category, amount):
         try:
-            path = Path(self.csv_file)
-            with path.open("a", newline="", encoding="utf-8") as file:
+            with self.csv_file.open("a", newline="", encoding="utf-8") as file:
                 writer = csv.writer(file)
                 writer.writerow([date, category, amount])
-
         except Exception as e:
             print(f"Error saving file: {e}")
 
-    def clear_all_enteries(self):
+    # This method is used to reset or clear all entries from the app
+    def clear_all_entries(self):
         try:
-            path = Path(self.csv_file)
-            with path.open("w", newline="", encoding="utf-8") as file:
+            with self.csv_file.open("w", newline="", encoding="utf-8") as file:
                 writer = csv.writer(file)
                 writer.writerow(["Date", "Category", "Amount"])
             self.balance = 0.0
-            self.transaction_history = []
+            self.record_history = []
             print(f"All transactions cleared (file kept).")
-
         except Exception as e:
             print(f"Error clearing previous entries: {e}")
 
-    # This method is used to record or add funds(money) received by the user
-    def add_funds(self):
+     # This method is used to record or add funds(money) received by the user
+    def add_funds(self, amount, source_of_funds, date=None):
         try:
-            amount = float(input(f"Enter the amount of funds: €").strip())
-            source_of_funds = input(
-                f"Enter source of funds(Salary, Saving, Gift): ").strip()
             date = datetime.now().strftime("%Y-%m-%d %H:%M")  # Timestamp each entry
             self.balance += amount  # this is the as self.balance = self.balance + amount
-            self.transaction_history.append((date, source_of_funds, amount))
+            self.record_history.append((date, source_of_funds, amount))
             self.save_file(date, source_of_funds, amount)
             print(f"Funds added: €{amount:.2f}")
+        except ValueError as e:
+            print(f"Invalid input: {e}")
 
-        except ValueError:
-            print(f"Invalid amount. Please enter a number.")
-
-    # This method is used to record or add the user's expenses
-    def add_expenses(self):
+     # This method is used to record or add the user's expenses
+    def add_expenses(self, amount, category, date=None):
         try:
-            amount = float(input(f"Enter the amount of expense: €").strip())
             if amount > self.balance:
-                print(f"Insufficient balance. Please try again")
-
-            else:
-                expense_category = input(
-                    f"Enter expense category (Rent, Groceries, Transport, Utility, Miscellaneous): ").strip()
-            date = datetime.now().strftime("%Y-%m-%d %H:%M")    # To add date and time
-            self.save_file(date, expense_category, -amount)
+                print(f"Insufficient balance. Please try again.")
+                return
+            date = datetime.now().strftime("%Y-%m-%d %H:%M")
             self.balance -= amount  # this is the as self.balance = self.balance - amount
-            self.transaction_history.append((date, expense_category, -amount))
-            print(f"Expense recorded: €{amount:.2f} for {expense_category}")
-
-        except ValueError:
-            print(f"Invalid amount. Please enter a number.")
+            self.record_history.append((date, category, -amount))
+            self.save_file(date, category, -amount)
+            print(f"Expense recorded: €{amount:.2f} for {category}")
+        except ValueError as e:
+            print(f"Invalid input: {e}")
 
     # This method is used to display the current balance
     def app_balance(self):
@@ -101,7 +87,7 @@ class FinanceApp:   # The class for the personal finance manager app
         print(f"\nSummary:")
         print(f"{'Date':<20} {'Category':<30} {'Amount':>10}")
         print("-" * 65)
-        for date, category, amount in self.transaction_history:
+        for date, category, amount in self.record_history:
             print(f"{date:<20} {category:<30} €{amount:.2f}")
         self.app_balance()
 
@@ -120,20 +106,35 @@ class FinanceApp:   # The class for the personal finance manager app
 
             choice = input(f"Choose an option (1-6): ")
 
-            if choice == '1':
-                self.add_funds()
+            if choice == '1':  # To add funds (e.g, salary, gift and savings)
+                try:
+                    amount = float(
+                        input(f"Enter the amount of funds: €").strip())
+                    source_of_funds = input(
+                        "Enter source of funds (Salary, Gift, etc.): ").strip()
+                    self.add_funds(amount, source_of_funds)
+                except ValueError:
+                    print("Invalid amount. Please try again.")
 
-            elif choice == '2':
-                self.add_expenses()
+            elif choice == '2':  # To add expenses
+                try:
+                    amount = float(
+                        input(f"Enter the amount of expense: €").strip())
+                    category = input(
+                        "Enter expense category (Rent, Groceries, Transport, Utility, etc.): ").strip()
+                    self.add_expenses(amount, category)
+                except ValueError:
+                    print("Invalid amount. Please try again.")
 
             elif choice == '3':
-                self.app_balance()
+                self.app_balance()  # To view current balance
 
             elif choice == '4':
+                # To check the summary or history of the finances.
                 self.app_summary()
 
             elif choice == '5':
-                self.clear_all_enteries()  # Call the clear function
+                self.clear_all_entries()  # Call the clear function
 
             elif choice == '6':
                 print(f"Exiting... Thank you for using the app!")
@@ -143,7 +144,7 @@ class FinanceApp:   # The class for the personal finance manager app
                 print(f"Invalid option. Please try again.")
 
 
-# This onditional statement ensures that the code runs only when executed directly from the main file
+# This conditional statement ensures that the code runs only when executed directly from the main file
 if __name__ == "__main__":
     app = FinanceApp()
     app.start()

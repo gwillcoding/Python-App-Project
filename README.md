@@ -20,3 +20,12 @@ The application prompts the user for input, and allows the user to type in amoun
 5.  Create a test_main.py file
 6.  Use pytest (code: pytest test_main.py) to check whether the code works correctly
 
+# AI Assistance
+
+Parts of this project were assisted by ChatGPT to fix code problem, expedite development and optimize algorithms.
+
+# Resources Used
+
+https://dev.to/sankworks/python-mini-project-1-personal-contact-manager-ver-10-2eah
+
+https://docs.python.org/3/tutorial/classes.html#class-objects

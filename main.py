@@ -21,6 +21,11 @@ class FinanceApp:   # The class for the personal finance manager app
             path = self.csv_file
             with path.open("r", newline="", encoding="utf-8") as file:
                 reader = csv.reader(file)
+                # This function was assisted by ChatGPT to optimize performance def optimize_function(data):
+            # function code here: headers = next(reader)
+                # for row in reader:
+                #     if len(row) >= 3:
+                #         date, category, amount = row[0], row[1], float(row[2])
                 headers = next(reader)
                 for row in reader:
                     if len(row) >= 3:
@@ -53,6 +58,8 @@ class FinanceApp:   # The class for the personal finance manager app
             self.balance = 0.0
             self.record_history = []
             print(f"All entriess cleared (file kept).")
+            # Resources Used
+            # [Errors and Exceptions] https://docs.python.org/3/library/datetime.html
         except Exception as e:
             print(f"Error clearing previous entries: {e}")
 
@@ -60,11 +67,15 @@ class FinanceApp:   # The class for the personal finance manager app
 
     def add_funds(self, amount, source_of_funds, date=None):
         try:
+            # ### Resources Used
+            # [datetime — Basic date and time types] https://docs.python.org/3/library/datetime.html
             date = datetime.now().strftime("%Y-%m-%d %H:%M")  # Timestamp each entry
             self.balance += amount  # this is the as self.balance = self.balance + amount
             self.record_history.append((date, source_of_funds, amount))
             self.save_entries(date, source_of_funds, amount)
             print(f"Funds added: €{amount:.2f}")
+            # Resources Used
+            # [Errors and Exceptions] https://docs.python.org/3/library/datetime.html
         except ValueError as e:
             print(f"Invalid input: {e}")
 
@@ -79,6 +90,8 @@ class FinanceApp:   # The class for the personal finance manager app
             self.balance -= amount  # this is the as self.balance = self.balance - amount
             self.record_history.append((date, category, -amount))
             self.save_entries(date, category, -amount)
+            # This function was assisted by ChatGPT to optimize performance def optimize_function(data):
+            # function code here: print(f"Expense recorded: €{amount:.2f} for {category}")
             print(f"Expense recorded: €{amount:.2f} for {category}")
         except ValueError as e:
             print(f"Invalid input: {e}")
@@ -92,13 +105,21 @@ class FinanceApp:   # The class for the personal finance manager app
 
     def app_summary(self):
         print(f"\nSummary:")
+        # This function was assisted by ChatGPT to optimize performance def optimize_function(data):
+        # function code here
+        # print(f"{'Date':<20} {'Category':<30} {'Amount':>10}")
+        # print("-" * 65)
         print(f"{'Date':<20} {'Category':<30} {'Amount':>10}")
         print("-" * 65)
         for date, category, amount in self.record_history:
             print(f"{date:<20} {category:<30} €{amount:.2f}")
         self.app_balance()
 
+    # Resources Used
+    # [Python Mini Project #1 - Personal Contact Manager (ver 1.0)]
+    # https://dev.to/sankworks/python-mini-project-1-personal-contact-manager-ver-10-2eah)
     # This method is used to runs the interactive menu of the app.
+
     def start(self):
         print(f"Welcome to Personal Finance Manager!")
 

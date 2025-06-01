@@ -83,30 +83,6 @@ class FinanceApp:   # The class for the personal finance manager app
         except ValueError as e:
             print(f"Invalid input: {e}")
 
-        # This method allows user to delete a specific entry (fund or expense)
-    def delete_entry(self):
-        if not self.record_history:
-            print(f"No entries to delete.")
-            return
-
-        print(f"\nRecord history:")
-        for i, (date, category, amount) in enumerate(self.record_history, start=1):
-            print(f"{i}. {date} - {category} - €{amount:.2f}")
-
-        try:
-            index = int(
-                input("Enter the number of the entry to delete: ").strip()) - 1
-            if 0 <= index < len(self.record_history):
-                removed = self.record_history.pop(index)
-                # Adjust the balance (reverse effect)
-                self.balance -= removed[2]
-                self._rewrite_csv()
-                print(f"Entry deleted: {removed[1]} of €{removed[2]:.2f}")
-            else:
-                print("Invalid entry number.")
-        except ValueError:
-            print("Invalid input. Please enter a valid number.")
-
     # This method is used to display the current balance
 
     def app_balance(self):

@@ -9,13 +9,14 @@ class FinanceApp:   # The class for the personal finance manager app
     # This method (the constructor) is used to initialized object.
 
     def __init__(self, csv_file="appData.csv"):
-        self.balance = 0.0
-        self.record_history = []
+        self.balance = 0.0  # Balance is zero until the user provides input.
+        self.record_history = []  # No records exist until the user adds an emtry
         self.csv_file = Path(csv_file)
-        self.load_transactions()
+        self.load_file()
 
     # This method is used to read the saved file
-    def load_transactions(self):
+
+    def load_file(self):
         try:     # Try  and except block is used for exception handling while working with files
             path = self.csv_file
             with path.open("r", newline="", encoding="utf-8") as file:
@@ -30,10 +31,12 @@ class FinanceApp:   # The class for the personal finance manager app
             with self.csv_file.open("w", newline="", encoding="utf-8") as file:
                 writer = csv.writer(file)
                 writer.writerow(["Date", "Category", "Amount"])
-            print(f"File not found. A new file was created: {self.csv_file}")
+                print(
+                    f"File not found. A new file was created: {self.csv_file}")
 
-    # This method is used to saved data from the user input
-    def save_file(self, date, category, amount):
+            # This method is used to saved data from the user input
+    def save_entries(self, date, category, amount):
+
         try:
             with self.csv_file.open("a", newline="", encoding="utf-8") as file:
                 writer = csv.writer(file)
@@ -42,29 +45,31 @@ class FinanceApp:   # The class for the personal finance manager app
             print(f"Error saving file: {e}")
 
     # This method is used to reset or clear all entries from the app
-    def clear_all_entries(self):
+    def app_reset(self):
         try:
             with self.csv_file.open("w", newline="", encoding="utf-8") as file:
                 writer = csv.writer(file)
                 writer.writerow(["Date", "Category", "Amount"])
             self.balance = 0.0
             self.record_history = []
-            print(f"All transactions cleared (file kept).")
+            print(f"All entriess cleared (file kept).")
         except Exception as e:
             print(f"Error clearing previous entries: {e}")
 
-     # This method is used to record or add funds(money) received by the user
+    # This method is used to record or add funds(money) received by the user
+
     def add_funds(self, amount, source_of_funds, date=None):
         try:
             date = datetime.now().strftime("%Y-%m-%d %H:%M")  # Timestamp each entry
             self.balance += amount  # this is the as self.balance = self.balance + amount
             self.record_history.append((date, source_of_funds, amount))
-            self.save_file(date, source_of_funds, amount)
+            self.save_entries(date, source_of_funds, amount)
             print(f"Funds added: €{amount:.2f}")
         except ValueError as e:
             print(f"Invalid input: {e}")
 
-     # This method is used to record or add the user's expenses
+    # This method is used to record or add the user's expenses
+
     def add_expenses(self, amount, category, date=None):
         try:
             if amount > self.balance:
@@ -73,16 +78,42 @@ class FinanceApp:   # The class for the personal finance manager app
             date = datetime.now().strftime("%Y-%m-%d %H:%M")
             self.balance -= amount  # this is the as self.balance = self.balance - amount
             self.record_history.append((date, category, -amount))
-            self.save_file(date, category, -amount)
+            self.save_entries(date, category, -amount)
             print(f"Expense recorded: €{amount:.2f} for {category}")
         except ValueError as e:
             print(f"Invalid input: {e}")
 
+        # This method allows user to delete a specific entry (fund or expense)
+    def delete_entry(self):
+        if not self.record_history:
+            print(f"No entries to delete.")
+            return
+
+        print(f"\nRecord history:")
+        for i, (date, category, amount) in enumerate(self.record_history, start=1):
+            print(f"{i}. {date} - {category} - €{amount:.2f}")
+
+        try:
+            index = int(
+                input("Enter the number of the entry to delete: ").strip()) - 1
+            if 0 <= index < len(self.record_history):
+                removed = self.record_history.pop(index)
+                # Adjust the balance (reverse effect)
+                self.balance -= removed[2]
+                self._rewrite_csv()
+                print(f"Entry deleted: {removed[1]} of €{removed[2]:.2f}")
+            else:
+                print("Invalid entry number.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
+
     # This method is used to display the current balance
+
     def app_balance(self):
         print(f"Current balance: €{self.balance:.2f}")
 
     # This method is used to prints and track all the financial record.
+
     def app_summary(self):
         print(f"\nSummary:")
         print(f"{'Date':<20} {'Category':<30} {'Amount':>10}")
@@ -100,18 +131,18 @@ class FinanceApp:   # The class for the personal finance manager app
             print(f"1. Add Funds")
             print(f"2. Record Expense")
             print(f"3. Check Balance")
-            print(f"4. View Transaction History")
-            print(f"5. Clear All Previous Entries")
+            print(f"4. View Summary")
+            print(f"5. Reset App")
             print(f"6. Exit")
 
             choice = input(f"Choose an option (1-6): ")
 
-            if choice == '1':  # To add funds (e.g, salary, gift and savings)
+            if choice == '1':  # To add funds (e.g, salary, savings and gift)
                 try:
                     amount = float(
                         input(f"Enter the amount of funds: €").strip())
                     source_of_funds = input(
-                        "Enter source of funds (Salary, Gift, etc.): ").strip()
+                        "Enter source of funds (Salary, Savings, Gift, etc.): ").strip()
                     self.add_funds(amount, source_of_funds)
                 except ValueError:
                     print("Invalid amount. Please try again.")
@@ -134,7 +165,7 @@ class FinanceApp:   # The class for the personal finance manager app
                 self.app_summary()
 
             elif choice == '5':
-                self.clear_all_entries()  # Call the clear function
+                self.app_reset()  # Call the clear function
 
             elif choice == '6':
                 print(f"Exiting... Thank you for using the app!")

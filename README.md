@@ -18,5 +18,5 @@ The application prompts the user for input, and allows the user to type in amoun
 3.  Create the instance methods
 4.   Run the app to check if it runs
 5.  Create a test_main.py file
-6.  Use pytest to check whether the code works correctly
+6.  Use pytest (code: pytest test_main.py) to check whether the code works correctly
 
